@@ -21,8 +21,17 @@ fun card_value card =
       | (_, Num n) => n
       | (_,_) => 10
 
+(*Escriba una función remove_card, la cuál toma una lista de cartas, una carta 
+y una excepción. La funcion retorna la lista sin la carta*)
+fun remove_card ([],selec_card, excep) = (*Así tira warning*)(*selec_card:card*)
+    raise excep 
+  | remove_card (card::cs, selec_card, excep : exn) =
+    case card = selec_card of
+	true => cs
+      | false => card::remove_card(cs,selec_card, excep) 
+
 
 (*Pruebas*)
 val test1 = card_color (Clubs,Num 2);
 val test2 = card_value (Clubs,Num 2);
-val test2_v2 = card_value(Clubs,Ace);
+val test3 = remove_card([(Hearts, Ace)],(Hearts,Ace),IllegalMove)
