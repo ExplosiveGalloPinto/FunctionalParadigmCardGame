@@ -9,7 +9,15 @@ datatype rank = Jack | Queen | King | Ace | Num of int
 type card = suit * rank
 datatype color = Red | Black
 datatype move = Discard of card | Draw
+				      
 exception IllegalMove
+	      
+fun draw_card (card_list, held_cards) =
+    case card_list of
+	[] => raise IllegalMove
+      | card::cs => (cs,(card::held_cards))
+    handle IllegalMove => (card_list, held_cards)
+	
 
 (* Escriba una funcion card_color, la cual toma una carta y retorna su color *)
 fun card_color card = 
@@ -29,11 +37,12 @@ fun card_value card =
 y una excepcion. La funcion retorna la lista sin la carta*)
 fun remove_card (xs,selec_card, excep) =
     case xs of
-	[] => raise excep 
+	[] => raise excep
       | card::cs => case card = selec_card of
 			true => cs
-		     | false => card::remove_card(cs,selec_card, excep)
-						
+		      | false => card::discard_card(cs,selec_card)
+    handle excep => xs
+			  
 (*Escriba una funcion all_same_color, la cual toma una lista de cartas y retorna true 
 si todas las cartas que estan dentro de la lista, son del mismo color. 
 Nota: usen pattern maching anidado como lo vimos en clase. *)
@@ -49,16 +58,14 @@ fun all_same_color xs =
 	case xs of
 	    [] => false
 	  | hd::tl => recursiveCheck(xs, card_color hd)
-    end
-							   
-						       
+    end 
 						      
 
 
 (*Pruebas*)
 val test1 = card_color (Clubs,Num 2);
 val test2 = card_value (Clubs,Num 2);
-val test3 = remove_card([(Hearts, Ace)],(Hearts,Ace),IllegalMove);
+val test3 = remove_card([(Hearts, Num 3)],(Hearts,Ace),IllegalMove);
 val test4 = all_same_color [(Hearts, Ace), (Hearts, Ace)];
 (*
 val test5 = sum_cards [(Clubs, Num 2),(Clubs, Num 2)];
