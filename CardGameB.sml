@@ -1,4 +1,4 @@
-(*Functional Card Game*)
+(*Functional Card Game A*)
 (*Preset Code -Dont Move-*)
 (*We can't:
 - Use the # character to index items
@@ -38,7 +38,7 @@ fun remove_card (xs,selec_card, excep) =
       | card::cs => if card = selec_card
 		    then cs
 		    else card::remove_card(cs,selec_card, excep)
-    handle excep => xs
+			 handle excep => xs
 			  
 (*Escriba una funcion all_same_color, la cual toma una lista de cartas y retorna true 
 si todas las cartas que estan dentro de la lista, son del mismo color. 
@@ -70,13 +70,13 @@ fun sum_cards (hand) =
 				  
 (*Escriba una funcion score, que toma una lista de cartas (en este caso serian las held-cards) y un int (en este caso seria el goal) y determina el score*)
 fun score (hand, goal)=
-    let val sum = sum_cards(hand)
+    let
+	val sum = sum_cards(hand)
 	val preliminar_score =
 	    if sum>goal
 	    then 3*(sum-goal)
 	    else goal-sum
     in
-	
 	if all_same_color hand
 	then preliminar_score div 2
 	else preliminar_score
@@ -97,13 +97,37 @@ fun officiate (card_list, move_list, goal) =
     in
 	helperFun(card_list, [], move_list)
     end
+
+
+
+
+
+(*Parte B del proyecto*)
+
+fun score_challenge (hand, goal)=
+    let
+    in
+    end
+	
+fun officiate_challenge (card_list, move_list, goal) =
+    let
+    in
+    end
+
+
+fun careful_player (card_list, goal) =
+    let
+	fun adding_movements (card_list, goal, move_list, held_cards) =
+	    case card_list of
+		[] => move_list
+	      | card::cs => case sum_cards(held_cards)+10<goal of
+				true => adding_movements (cs, goal, Draw::move_list, card::held_cards)
+							 case cs of
+							     [] => score(held_cards, goal)
+							   | next_card::xs => case held_cards of
+										  [] => []
+										| discarded_card::ls => if score(ls, goal) 
+    in
+    end
+	
 				  
-(*Pruebas*)
-val test1 = card_color (Clubs,Num 2);
-val test2 = card_value (Clubs,Num 2);
-val test3 = remove_card([(Hearts, Ace)],(Hearts,Ace),IllegalMove);
-val test4 = all_same_color [(Hearts, Ace), (Hearts, Ace)];
-val test5 = sum_cards [(Clubs, Num 2),(Clubs, Num 2)];
-val test6 = score ([(Hearts, Num 2),(Clubs, Num 4)],10);
-val test7 = officiate ([(Hearts, Num 2),(Clubs, Num 4)],[Draw], 15);
-val test8 = officiate ([(Clubs,Ace),(Spades,Ace),(Clubs,Ace),(Spades,Ace)],[Draw,Draw,Draw,Draw,Draw],42);
