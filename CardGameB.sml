@@ -106,15 +106,65 @@ fun officiate (card_list, move_list, goal) =
 
 fun score_challenge (hand, goal)=
     let
+	fun Ace_counter(hand)=
+	    case hand of
+		[] => 0
+	       |card::rest_of_hand  =>
+		if card_value card = 11
+		then 1+Ace_counter rest_of_hand
+		else Ace_counter rest_of_hand
+				 
+	fun Ace_tester(hand, ace_qty, score)=
+	    case hand of 
+		[] => score 
+	      | card::rest_of_hand =>
+		if card_value card = 11
+		then
+		    if ace_qty > 0
+		    then Ace_tester (rest_of_hand,ace_qty-1,score+1)
+		    else Ace_tester (rest_of_hand,ace_qty-1,score+11)
+		else Ace_tester (rest_of_hand,ace_qty-1,score+card_value card)
+				
+ 	fun lowest_score(best_score, hand, ace_qty, ace_as_one )=
+	    let
+		fun score (hand, ace_qty)=
+		    let
+			val sum = Ace_tester (hand, ace_qty, 0)
+			val preliminar_score =
+			    if sum>goal
+			    then 3*(sum-goal)
+			    else goal-sum
+		    in
+			if all_same_color hand
+			then preliminar_score div 2
+			else preliminar_score
+		    end
+	    in
+		if ace_qty = 0
+		then best_score
+		else
+		    if score (hand, ace_qty)<best_score 
+		    then lowest_score(score (hand, ace_qty),hand,ace_qty-1,ace_as_one+1)
+		    else lowest_score(best_score,hand,ace_qty-1,ace_as_one)
+	    end
     in
+	lowest_score(goal, hand, Ace_counter hand, 0)
     end
 	
 fun officiate_challenge (card_list, move_list, goal) =
-    let
+    let fun helperFun (current_card_list, current_hand, current_move_list)=
+	    case current_move_list of
+		[] => score_challenge(current_hand, goal)
+	      | Draw::ms => (
+		  case current_card_list of
+		      []=> score_challenge(current_hand, goal)
+		    | c::cs  => helperFun(cs, c::current_hand, ms))
+	      | (Discard c)::ms => helperFun(current_card_list, remove_card(current_hand, c, IllegalMove),ms)
     in
+	helperFun(card_list, [], move_list)
     end
 
-
+(*
 fun careful_player (card_list, goal) =
     let
 	fun adding_movements (card_list, goal, move_list, held_cards) =
@@ -129,5 +179,6 @@ fun careful_player (card_list, goal) =
 										| discarded_card::ls => if score(ls, goal) 
     in
     end
-	
+*)	
 				  
+val test2 = officiate_challenge ([(Spades, Ace),(Clubs, Ace)],[Draw, Draw], 15); 
