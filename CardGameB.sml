@@ -169,7 +169,7 @@ fun careful_player(card_list,goal) =
     let 
         fun discard_seletion(held_card,check_list,card) =
             case check_list of
-             [] => (false, (Clubs, Num 10)) 
+             [] => (false, card) 
              |x::xs => if score(card::remove_card(held_card, x, IllegalMove), goal) = 0
                        then (true,x)
                        else discard_seletion(held_card,xs,card)
@@ -184,7 +184,7 @@ fun careful_player(card_list,goal) =
                                      [] => move_selection(x::held_list,xs,move_list@[Draw])
                                     |y::ys => case  discard_seletion(held_list,held_list,x) of
                                                     (true,x1) => move_list@[(Discard x1),Draw]
-                                                   |_ => if ((goal - sum_cards(held_list) > 10) orelse
+                                                  | (false,x2) => if ((goal - sum_cards(held_list) > 10) orelse
                                                              (sum_cards(x::held_list) <= goal))
                                                          then 
                                                                move_selection(x::held_list,xs,move_list@[Draw])
@@ -194,4 +194,5 @@ fun careful_player(card_list,goal) =
         move_selection([],card_list,[])
     end    
 				  
-val test2 = officiate_challenge ([(Spades, Ace),(Clubs, Ace)],[Draw, Draw], 15); 
+val test2 = officiate_challenge ([(Spades, Ace),(Clubs, Ace)],[Draw, Draw], 15);
+val test3 = careful_player([(Clubs,Ace),(Hearts,Num(5)),(Spades,Ace),(Clubs,Jack)],22);
