@@ -164,21 +164,34 @@ fun officiate_challenge (card_list, move_list, goal) =
 	helperFun(card_list, [], move_list)
     end
 
-(*
-fun careful_player (card_list, goal) =
-    let
-	fun adding_movements (card_list, goal, move_list, held_cards) =
-	    case card_list of
-		[] => move_list
-	      | card::cs => case sum_cards(held_cards)+10<goal of
-				true => adding_movements (cs, goal, Draw::move_list, card::held_cards)
-							 case cs of
-							     [] => score(held_cards, goal)
-							   | next_card::xs => case held_cards of
-										  [] => []
-										| discarded_card::ls => if score(ls, goal) 
-    in
-    end
-*)	
+(*Testing careful_player*)
+fun careful_player(card_list,goal) = 
+    let 
+        fun discard_seletion(held_card,check_list,card) =
+            case check_list of
+             [] => (false, (Clubs, Num 10)) 
+             |x::xs => if score(card::remove_card(held_card, x, IllegalMove), goal) = 0
+                       then (true,x)
+                       else discard_seletion(held_card,xs,card)
+   
+        fun move_selection(held_list,card_list,move_list) =
+            if score(held_list,goal) = 0
+            then move_list
+            else  
+                 case card_list of
+                      [] => move_list
+                      |x::xs => case held_list of 
+                                     [] => move_selection(x::held_list,xs,move_list@[Draw])
+                                    |y::ys => case  discard_seletion(held_list,held_list,x) of
+                                                    (true,x1) => move_list@[(Discard x1),Draw]
+                                                   |_ => if ((goal - sum_cards(held_list) > 10) orelse
+                                                             (sum_cards(x::held_list) <= goal))
+                                                         then 
+                                                               move_selection(x::held_list,xs,move_list@[Draw])
+                                                         else
+                                                               move_selection(x::held_list,xs,move_list@[Discard y])
+    in                                                             
+        move_selection([],card_list,[])
+    end    
 				  
 val test2 = officiate_challenge ([(Spades, Ace),(Clubs, Ace)],[Draw, Draw], 15); 
