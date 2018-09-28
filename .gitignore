@@ -1,1 +1,4 @@
-.sml~
+*.sml~
+*.sml#
+.#CardGame.sml
+.#CardGameB.sml
