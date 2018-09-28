@@ -195,3 +195,4 @@ fun careful_player(card_list,goal) =
     end    
 				  
 val test2 = officiate_challenge ([(Spades, Ace),(Clubs, Ace)],[Draw, Draw], 15); 
+val test3 = careful_player([(Clubs,Ace),(Hearts,Num(5)),(Spades,Ace),(Clubs,Jack)],22);
