@@ -98,12 +98,4 @@ fun officiate (card_list, move_list, goal) =
 	helperFun(card_list, [], move_list)
     end
 				  
-(*Pruebas*)
-val test1 = card_color (Clubs,Num 2);
-val test2 = card_value (Clubs,Num 2);
-val test3 = remove_card([(Hearts, Ace)],(Hearts,Ace),IllegalMove);
-val test4 = all_same_color [(Hearts, Ace), (Hearts, Ace)];
-val test5 = sum_cards [(Clubs, Num 2),(Clubs, Num 2)];
-val test6 = score ([(Hearts, Num 2),(Clubs, Num 4)],10);
-val test7 = officiate ([(Hearts, Num 2),(Clubs, Num 4)],[Draw], 15);
-val test8 = officiate ([(Clubs,Ace),(Spades,Ace),(Clubs,Ace),(Spades,Ace)],[Draw,Draw,Draw,Draw,Draw],42);
+
