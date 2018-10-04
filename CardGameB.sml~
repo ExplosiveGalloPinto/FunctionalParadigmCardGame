@@ -1,0 +1,101 @@
+(*Functional Card Game A*)
+(*Preset Code -Dont Move-*)
+(*We can't:
+- Use the # character to index items
+- Write down any explicit types
+- Do not use isSome, valOf, null, hd, tl*)
+datatype suit = Clubs | Diamonds | Hearts | Spades
+datatype rank = Jack | Queen | King | Ace | Num of int
+type card = suit * rank
+datatype color = Red | Black
+datatype move = Discard of card | Draw
+				      
+exception IllegalMove
+	
+
+(* Escriba una funcion card_color, la cual toma una carta y retorna su color *)
+fun card_color card = 
+    case card of
+	(Clubs, _) => Black
+      | (Spades, _) => Black
+      | (Diamonds,_) => Red
+      | (Hearts,_) => Red
+
+			  
+(*Escriba una funcion card_value, la cual toma una carta y retorna su valor*)
+fun card_value card =
+    case card of
+	(_,Ace) => 11
+      | (_, Num n) => n
+      | (_,_) => 10
+
+		     
+(*Escriba una funcion remove_card, la cual toma una lista de cartas, una carta 
+y una excepcion. La funcion retorna la lista sin la carta*)
+fun remove_card (xs,selec_card, excep) =
+    case xs of
+	[] => raise excep
+      | card::cs => if card = selec_card
+		    then cs
+		    else card::remove_card(cs,selec_card, excep)
+			 handle excep => xs
+			  
+(*Escriba una funcion all_same_color, la cual toma una lista de cartas y retorna true 
+si todas las cartas que estan dentro de la lista, son del mismo color. 
+Nota: usen pattern maching anidado como lo vimos en clase. *)
+fun all_same_color xs =
+    let
+	fun recursiveCheck (ls, color) = 
+	    case ls of
+		[] => true
+	      | hd::tl => case (card_color hd) = color of
+			      true => recursiveCheck(tl,color)	     
+			    | false => false
+    in
+	case xs of
+	    [] => false
+	  | hd::tl => recursiveCheck(xs, card_color hd)
+    end
+
+(*Escriba una función sum_cards, la cual toma una lista de cartas y retorna la suma de sus valores. (Nota: para este problema es requerido que la solución utilice la técnica tail recursion)*)
+fun sum_cards (hand) =
+    let
+	fun adding_values (list, acc) =
+	    case list of
+		[] => acc
+	      | card::cs => adding_values(cs, (card_value card) + acc)
+    in
+	adding_values(hand, 0)
+    end
+				  
+(*Escriba una funcion score, que toma una lista de cartas (en este caso serian las held-cards) y un int (en este caso seria el goal) y determina el score*)
+fun score (hand, goal)=
+    let
+	val sum = sum_cards(hand)
+	val preliminar_score =
+	    if sum>goal
+	    then 3*(sum-goal)
+	    else goal-sum
+    in
+	if all_same_color hand
+	then preliminar_score div 2
+	else preliminar_score
+    end
+
+(* Escriba una funcion officiate. Esta funcion toma la lista de cartas, una lista de movimientos, y un int (que seria el goal); y retorna el score obtenido al final del juego*)	
+fun officiate (card_list, move_list, goal) =
+    let fun helperFun (current_card_list, current_hand, current_move_list)=
+	    case current_move_list of
+		[] => score(current_hand, goal)
+	      | Draw::ms => (
+		  case current_card_list of
+		      []=> score(current_hand, goal)
+		    | c::cs  => if sum_cards(c::current_hand)>goal
+				then score(c::current_hand, goal)
+				else helperFun(cs, c::current_hand, ms))
+	      | (Discard c)::ms => helperFun(current_card_list, remove_card(current_hand, c, IllegalMove),ms)
+    in
+	helperFun(card_list, [], move_list)
+    end
+				  
+

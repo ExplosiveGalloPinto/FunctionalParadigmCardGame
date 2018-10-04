@@ -1,4 +1,4 @@
-(*Functional Card Game A*)
+(*Functional Card Game B*)
 (*Preset Code -Dont Move-*)
 (*We can't:
 - Use the # character to index items
@@ -38,7 +38,6 @@ fun remove_card (xs,selec_card, excep) =
       | card::cs => if card = selec_card
 		    then cs
 		    else card::remove_card(cs,selec_card, excep)
-			 handle excep => xs
 			  
 (*Escriba una funcion all_same_color, la cual toma una lista de cartas y retorna true 
 si todas las cartas que estan dentro de la lista, son del mismo color. 
@@ -77,9 +76,11 @@ fun score (hand, goal)=
 	    then 3*(sum-goal)
 	    else goal-sum
     in
-	if all_same_color hand
-	then preliminar_score div 2
-	else preliminar_score
+	case hand of
+	    [] => preliminar_score div 2
+	   |_ => if all_same_color hand
+		 then preliminar_score div 2
+		 else preliminar_score
     end
 
 (* Escriba una funcion officiate. Esta funcion toma la lista de cartas, una lista de movimientos, y un int (que seria el goal); y retorna el score obtenido al final del juego*)	
@@ -123,7 +124,7 @@ fun score_challenge (hand, goal)=
 		    if ace_qty > 0
 		    then Ace_tester (rest_of_hand,ace_qty-1,score+1)
 		    else Ace_tester (rest_of_hand,ace_qty-1,score+11)
-		else Ace_tester (rest_of_hand,ace_qty-1,score+card_value card)
+		else Ace_tester (rest_of_hand,ace_qty,score+card_value card)
 				
  	fun lowest_score(best_score, hand, ace_qty, ace_as_one )=
 	    let
@@ -135,9 +136,11 @@ fun score_challenge (hand, goal)=
 			    then 3*(sum-goal)
 			    else goal-sum
 		    in
-			if all_same_color hand
-			then preliminar_score div 2
-			else preliminar_score
+			case hand of
+			    [] => preliminar_score div 2
+			 |_ => if all_same_color hand
+			       then preliminar_score div 2
+			       else preliminar_score
 		    end
 	    in
 		if ace_qty = 0

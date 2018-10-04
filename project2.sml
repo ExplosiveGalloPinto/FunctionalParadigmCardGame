@@ -38,7 +38,6 @@ fun remove_card (xs,selec_card, excep) =
       | card::cs => if card = selec_card
 		    then cs
 		    else card::remove_card(cs,selec_card, excep)
-    handle excep => xs
 			  
 (*Escriba una funcion all_same_color, la cual toma una lista de cartas y retorna true 
 si todas las cartas que estan dentro de la lista, son del mismo color. 
@@ -76,10 +75,11 @@ fun score (hand, goal)=
 	    then 3*(sum-goal)
 	    else goal-sum
     in
-	
-	if all_same_color hand
-	then preliminar_score div 2
-	else preliminar_score
+	case hand of
+	    [] => preliminar_score div 2
+	   |_ => if all_same_color hand
+		 then preliminar_score div 2
+		 else preliminar_score
     end
 
 (* Escriba una funcion officiate. Esta funcion toma la lista de cartas, una lista de movimientos, y un int (que seria el goal); y retorna el score obtenido al final del juego*)	
@@ -98,4 +98,12 @@ fun officiate (card_list, move_list, goal) =
 	helperFun(card_list, [], move_list)
     end
 				  
-
+(*Pruebas*)
+val test1 = card_color (Clubs,Num 2);
+val test2 = card_value (Clubs,Num 2);
+val test3 = remove_card([(Hearts, Ace)],(Hearts,Ace),IllegalMove);
+val test4 = all_same_color [(Hearts, Ace), (Hearts, Ace)];
+val test5 = sum_cards [(Clubs, Num 2),(Clubs, Num 2)];
+val test6 = score ([(Hearts, Num 2),(Clubs, Num 4)],10);
+val test7 = officiate ([(Hearts, Num 2),(Clubs, Num 4)],[Draw], 15);
+val test8 = officiate ([(Clubs,Ace),(Spades,Ace),(Clubs,Ace),(Spades,Ace)],[Draw,Draw,Draw,Draw,Draw],42);
